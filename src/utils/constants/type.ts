@@ -1,5 +1,11 @@
-export type CardData = {
+export interface Tile {
   id: number;
-  title: string;
-  imageUrl: string;
-};
+  value: string;
+  isRevealed: boolean;
+  isMatched: boolean;
+}
+
+export interface GameStats {
+  tilesClicked: number;
+  matches: number;
+}
