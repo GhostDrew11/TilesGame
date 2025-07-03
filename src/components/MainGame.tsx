@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { GameStats, Tile } from "../utils/constants/type";
 import "../MemoryGame.css";
-import Tile from "./TileComponent";
 import TileComponent from "./TileComponent";
 
 const MainGame = () => {
@@ -21,7 +20,50 @@ const MainGame = () => {
   });
   const [selectedTiles, setSelectedTiles] = useState<number[]>([]);
 
-  const handleTileClick = () => {};
+  const handleTileClick = (tileId: number): void => {
+    if (selectedTiles.length >= 2) return;
+
+    setTiles((prevTiles) =>
+      prevTiles.map((tile) =>
+        tile.id === tileId ? { ...tile, isRevealed: true } : tile
+      )
+    );
+
+    const newSelectedTiles = [...selectedTiles, tileId];
+    setSelectedTiles(newSelectedTiles);
+
+    setGameStats((prev) => ({ ...prev, tilesClicked: prev.tilesClicked + 1 }));
+
+    if (newSelectedTiles.length === 2) {
+      const [firstId, secondId] = newSelectedTiles;
+      const firstTile = tiles.find((t) => t.id === firstId);
+      const secondTile = tiles.find((t) => t.id === secondId);
+
+      setTimeout(() => {
+        if (firstTile && secondTile && firstTile.value === secondTile.value) {
+          // Match Found
+          setTiles((prevTiles) =>
+            prevTiles.map((tile) =>
+              tile.id === firstId || tile.id === secondId
+                ? { ...tile, isMatched: true }
+                : tile
+            )
+          );
+          setGameStats((prev) => ({ ...prev, matches: prev.matches + 1 }));
+        } else {
+          // No match - hide tiles again
+          setTiles((prevTiles) =>
+            prevTiles.map((tile) =>
+              tile.id === firstId || tile.id === secondId
+                ? { ...tile, isRevealed: false }
+                : tile
+            )
+          );
+        }
+        setSelectedTiles([]);
+      }, 1000);
+    }
+  };
 
   const resetGame = () => {
     setTiles(initialTiles);
