@@ -1,4 +1,4 @@
-import type { Tile } from "../utils/constants/type";
+import type { Tile } from "../types/game";
 
 type TileProps = {
   tile: Tile;

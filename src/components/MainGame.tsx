@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { GameStats, Tile } from "../utils/constants/type";
+import type { GameStats, Tile } from "../types/game";
 import "../MemoryGame.css";
 import TileComponent from "./TileComponent";
 
