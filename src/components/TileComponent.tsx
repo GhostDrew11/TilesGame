@@ -3,28 +3,35 @@ import type { Tile } from "../types/game";
 type TileProps = {
   tile: Tile;
   onTileClick: (id: number) => void;
+  disabled: boolean;
 };
 
-const TileComponent = ({ tile, onTileClick }: TileProps) => {
-  const handleTileClicked = () => {
-    if (!tile.isRevealed && !tile.isMatched) {
+const TileComponent = ({ tile, onTileClick, disabled }: TileProps) => {
+  const handleTileClick = () => {
+    if (!disabled && tile.state === "hidden") {
       onTileClick(tile.id);
     }
   };
 
   const getTileClass = (): string => {
-    if (tile.isMatched) return "tile tile--matched";
-    if (tile.isRevealed) return "tile tile--revealed";
-    return "tile tile--hidden";
+    const baseClass = "tile";
+    switch (tile.state) {
+      case "matched":
+        return `${baseClass} tile--matched`;
+      case "revealed":
+        return `${baseClass} tile--revealed`;
+      default:
+        return `${baseClass} tile--hidden`;
+    }
   };
 
   return (
     <button
-      onClick={handleTileClicked}
+      onClick={handleTileClick}
       className={getTileClass()}
-      disabled={tile.isRevealed || tile.isMatched}
+      disabled={disabled || tile.state !== "hidden"}
     >
-      {tile.isRevealed || tile.isMatched ? tile.value : "?"}
+      {tile.state !== "hidden" ? tile.value : "?"}
     </button>
   );
 };
