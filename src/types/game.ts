@@ -1,5 +1,5 @@
-type GamePhase = "study" | "play" | "results";
-type TileState = "hidden" | "revealed" | "matched";
+export type GamePhase = "study" | "play" | "results";
+export type TileState = "hidden" | "revealed" | "matched";
 
 export interface Tile {
   id: number;
