@@ -12,6 +12,7 @@ export const useGameTimer = (
     if (!isActive) return;
 
     if (timeRemaining <= 0) {
+      setTimeRemaining(0); // ensure no more negative countdown
       onTimeUp();
       return;
     }

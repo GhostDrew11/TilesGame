@@ -10,6 +10,7 @@ const MainGame = () => {
   const {
     tiles,
     gameStats,
+    setGameStats,
     handleTileClick,
     startPlayPhase,
     endGame,
@@ -26,12 +27,15 @@ const MainGame = () => {
     gameStats.phase === "study" || gameStats.phase === "play";
 
   const handleTimeUp = useCallback(() => {
-    if (gameStats.phase === "study") {
-      startPlayPhase();
-    } else if (gameStats.phase === "play") {
-      endGame();
-    }
-  }, [gameStats.phase, startPlayPhase, endGame]);
+    setGameStats((prev) => {
+      if (prev.phase === "study") {
+        startPlayPhase();
+      } else if (prev.phase === "play") {
+        endGame();
+      }
+      return prev;
+    });
+  }, [setGameStats, startPlayPhase, endGame]);
 
   const { timeRemaining, resetTimer } = useGameTimer(
     currentPhaseTime,

@@ -120,6 +120,7 @@ export const useMemoryGame = (config: GameConfig) => {
   return {
     tiles,
     gameStats,
+    setGameStats,
     selectedTiles,
     handleTileClick,
     startPlayPhase,
