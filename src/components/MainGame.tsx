@@ -1,10 +1,66 @@
-import { useState } from "react";
-import type { GameStats, Tile } from "../types/game";
+import { useCallback, useEffect } from "react";
 import "../MemoryGame.css";
 import TileComponent from "./TileComponent";
 import GameStatsComponent from "./GameStatsComponent";
+import { useMemoryGame } from "../hooks/useMemoryGame";
+import { demoConfig } from "../utils/constants/constants";
+import { useGameTimer } from "../hooks/useGameTimer";
 
 const MainGame = () => {
+  const {
+    tiles,
+    gameStats,
+    handleTileClick,
+    startPlayPhase,
+    endGame,
+    resetGame,
+    initializeTiles,
+  } = useMemoryGame(demoConfig);
+
+  // Timer management
+  const currentPhaseTime =
+    gameStats.phase === "study"
+      ? demoConfig.studyTimeSeconds
+      : demoConfig.playTimeSeconds;
+  const isTimerActive =
+    gameStats.phase === "study" || gameStats.phase === "play";
+
+  const handleTimeUp = useCallback(() => {
+    if (gameStats.phase === "study") {
+      startPlayPhase();
+    } else if (gameStats.phase === "play") {
+      endGame();
+    }
+  }, [gameStats.phase, startPlayPhase, endGame]);
+
+  const { timeRemaining, resetTimer } = useGameTimer(
+    currentPhaseTime,
+    isTimerActive,
+    handleTimeUp
+  );
+
+  const handleReset = () => {
+    resetGame();
+    resetTimer(demoConfig.studyTimeSeconds);
+  };
+
+  const isGameDisabled =
+    gameStats.phase === "study" || gameStats.phase === "results";
+
+  // Initialize game on mount
+  useEffect(() => {
+    initializeTiles();
+  }, [initializeTiles]);
+
+  // Reset Timer when phase changes
+  useEffect(() => {
+    if (gameStats.phase === "study") {
+      resetTimer(demoConfig.studyTimeSeconds);
+    } else if (gameStats.phase === "play") {
+      resetTimer(demoConfig.playTimeSeconds);
+    }
+  }, [gameStats.phase, resetTimer]);
+
   return (
     <div className="game-container">
       <header className="game-header">
@@ -16,7 +72,7 @@ const MainGame = () => {
 
       <GameStatsComponent
         stats={gameStats}
-        config={config}
+        config={demoConfig}
         timeRemaining={timeRemaining}
       />
 

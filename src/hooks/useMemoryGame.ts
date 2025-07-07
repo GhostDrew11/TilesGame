@@ -48,7 +48,7 @@ export const useMemoryGame = (config: GameConfig) => {
       if (gameStats.phase !== "play" || selectedTiles.length >= 2) return;
 
       const tile = tiles.find((t) => t.id === tileId);
-      if (!tile || tile.state === "hidden") return;
+      if (!tile || tile.state !== "hidden") return;
 
       // Reveal the clicked Tile
       setTiles((prev) =>

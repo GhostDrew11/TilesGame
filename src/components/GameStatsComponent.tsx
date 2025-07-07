@@ -34,7 +34,9 @@ const GameStatsComponent = ({
     <div className="stats-container">
       <div className="phase-indicator">
         <h2 className="phase-title">{getPhaseDisplay()}</h2>
-        <div>Time: {formatTime(timeRemaining)}</div>
+        <div className="timer">
+          <div>Time: {formatTime(timeRemaining)}</div>
+        </div>
       </div>
 
       <div className="stats-grid">
