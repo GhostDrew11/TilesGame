@@ -65,6 +65,16 @@ const MainGame = () => {
     }
   }, [gameStats.phase, resetTimer]);
 
+  useEffect(() => {
+    if (
+      gameStats.phase === "play" &&
+      gameStats.matches === demoConfig.gridSize / 2
+    ) {
+      endGame();
+      resetTimer(0);
+    }
+  }, [gameStats.matches, gameStats.phase, endGame, resetTimer]);
+
   return (
     <div className="game-container">
       <header className="game-header">
