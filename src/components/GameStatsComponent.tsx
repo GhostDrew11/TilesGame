@@ -1,4 +1,4 @@
-import type { GameConfig, GameStats } from "../types/game";
+import type { GameConfig, GameStats } from "../types/types";
 
 type GameStatsProps = {
   stats: GameStats;

@@ -1,4 +1,4 @@
-import type { Tile } from "../types/game";
+import type { Tile } from "../types/types";
 
 export const shuffleArray = (tiles: Tile[]): Tile[] => {
   const result = [...tiles];

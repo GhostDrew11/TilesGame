@@ -1,4 +1,4 @@
-import type { GameConfig } from "../../types/game";
+import type { GameConfig } from "../types/types";
 
 export const demoConfig: GameConfig = {
   studyTimeSeconds: 15,

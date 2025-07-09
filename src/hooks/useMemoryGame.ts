@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { GameStats, GameConfig, Tile, TileState } from "../types/game";
+import type { GameStats, GameConfig, Tile, TileState } from "../types/types";
 import { shuffleArray } from "../utils/helpers";
 
 export const useMemoryGame = (config: GameConfig) => {

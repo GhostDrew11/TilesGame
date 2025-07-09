@@ -1,4 +1,4 @@
-import type { Tile } from "../types/game";
+import type { Tile } from "../types/types";
 
 type TileProps = {
   tile: Tile;
