@@ -3,8 +3,8 @@ import "../MemoryGame.css";
 import TileComponent from "./TileComponent";
 import GameStatsComponent from "./GameStatsComponent";
 import { useMemoryGame } from "../hooks/useMemoryGame";
-import { demoConfig } from "../types/constants/constants";
 import { useGameTimer } from "../hooks/useGameTimer";
+import { demoConfig } from "../constants/demoConfig";
 
 const MainGame = () => {
   const {

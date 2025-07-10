@@ -1,3 +1,5 @@
+import type { ThemeKey } from "../themes";
+
 export type GamePhase = "config" | "study" | "play" | "paused" | "results";
 export type TileState = "hidden" | "revealed" | "matched" | "mismatched";
 export type SoundType = "flip" | "match" | "mismatch" | "win" | "lose";
@@ -22,8 +24,8 @@ export interface GameConfig {
   playTimeSeconds: number;
   gridSize: number;
   enableSound: boolean;
-  enableAnimation: boolean;
-  theme: "default" | "dark" | "colorful";
+  enableAnimations: boolean;
+  theme: ThemeKey;
 }
 
 export interface GameStats {
