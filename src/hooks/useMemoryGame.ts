@@ -70,7 +70,7 @@ export const useMemoryGame = (config: GameConfig) => {
     const emojiSet = emojiSets[config.difficulty];
     const pairs: Tile[] = [];
 
-    for (let i = 0; i < setting.pairs; i++) {
+    for (let i = 0; i < setting?.pairs; i++) {
       const emoji = emojiSet[i];
       const pairId = i;
 
@@ -95,7 +95,7 @@ export const useMemoryGame = (config: GameConfig) => {
     }
 
     // Fill the remaining slots with hidden tiles for larger grids
-    while (pairs.length < setting.gridSize) {
+    while (pairs.length < setting?.gridSize) {
       pairs.push({
         id: pairs.length,
         value: "",
