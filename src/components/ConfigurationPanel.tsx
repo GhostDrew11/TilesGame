@@ -5,7 +5,7 @@ import type { ThemeKey } from "../themes";
 import themes from "../themes";
 import { difficultySettings } from "../constants/difficultySettings";
 
-type ConfigPanelProps = {
+type ConfigurationPanelProps = {
   config: GameConfig;
   onConfigChange: (config: GameConfig) => void;
   onStartGame: () => void;
@@ -15,7 +15,7 @@ const ConfigurationPanel = ({
   config,
   onConfigChange,
   onStartGame,
-}: ConfigPanelProps) => {
+}: ConfigurationPanelProps) => {
   const updateConfig = <K extends keyof GameConfig>(
     key: K,
     value: GameConfig[K]
