@@ -1,4 +1,3 @@
-import React from "react";
 import { Difficulty, type GameConfig } from "../types/types";
 import { saveToStorage } from "../utils/localStorage";
 import { STORAGE_KEY } from "../constants/storageKeys";
