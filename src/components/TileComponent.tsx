@@ -1,52 +1,44 @@
-import type { ThemeKey } from "../themes";
+import { useCallback } from "react";
 import type { Tile } from "../types/types";
 
 type TileProps = {
   tile: Tile;
   onTileClick: (id: number) => void;
   disabled: boolean;
-  theme?: ThemeKey;
-  enabledAnimations: boolean;
 };
 
-const TileComponent = ({
-  tile,
-  onTileClick,
-  disabled,
-  enabledAnimations,
-}: TileProps) => {
-  const handleTileClick = () => {
-    if (!disabled && tile.state === "hidden") {
-      onTileClick(tile.id);
-    }
-  };
+const TileComponent = ({ tile, onTileClick, disabled }: TileProps) => {
+  const handleTileClick = useCallback(
+    () => () => {
+      if (!disabled && tile?.state === "hidden") {
+        onTileClick(tile?.id);
+      }
+    },
+    [disabled, tile?.state, tile?.id, onTileClick]
+  );
 
   const getTileClass = (): string => {
     const baseClass = "tile";
-    const animationsClass = enabledAnimations ? "tile--animated" : "";
-    return `${baseClass} ${animationsClass} tile--${tile.state}`;
+    switch (tile?.state) {
+      case "matched":
+        return `${baseClass} tile--matched`;
+      case "revealed":
+        return `${baseClass} tile--revealed`;
+      default:
+        return `${baseClass} tile--hidden`;
+    }
   };
-
-  if (tile.pairId < 0) {
-    return <div className="tile tile--empty"></div>;
-  }
 
   return (
     <button
       onClick={handleTileClick}
       className={getTileClass()}
       disabled={disabled || tile.state !== "hidden"}
-      style={{
-        animationDelay: enabledAnimations
-          ? `${(tile.animationDelay || 0) * 1000}ms`
-          : "0ms",
-      }}
+      aria-label={
+        tile.state !== "hidden" ? `Tile ${tile.value}` : "Hidden tile"
+      }
     >
-      {tile.state !== "hidden" ? (
-        <span className="tile-content">{tile.emoji}</span>
-      ) : (
-        <span className="tile-question">?</span>
-      )}
+      {tile.state !== "hidden" ? tile.value : "?"}
     </button>
   );
 };
