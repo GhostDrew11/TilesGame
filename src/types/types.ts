@@ -1,8 +1,8 @@
 import type { ThemeKey } from "../themes";
 
 export type GamePhase = "config" | "study" | "play" | "paused" | "results";
-export type TileState = "hidden" | "revealed" | "matched" | "mismatched";
-export type SoundType = "flip" | "match" | "mismatch" | "win" | "lose";
+export type TileState = "hidden" | "revealed" | "matched";
+export type GameDifficulty = "easy" | "medium" | "hard";
 
 export enum Difficulty {
   EASY = "easy",
@@ -39,11 +39,9 @@ export interface GameStats {
 }
 
 export interface HighScore {
-  id: string;
-  playerName: string;
   score: number;
-  accuracy: number;
-  difficulty: Difficulty;
-  date: string;
+  matches: number;
   timeElapsed: number;
+  difficulty: GameDifficulty;
+  date: string;
 }

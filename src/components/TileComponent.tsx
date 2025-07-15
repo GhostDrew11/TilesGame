@@ -5,7 +5,7 @@ type TileProps = {
   tile: Tile;
   onTileClick: (id: number) => void;
   disabled: boolean;
-  theme: ThemeKey;
+  theme?: ThemeKey;
   enabledAnimations: boolean;
 };
 
@@ -13,7 +13,6 @@ const TileComponent = ({
   tile,
   onTileClick,
   disabled,
-  theme,
   enabledAnimations,
 }: TileProps) => {
   const handleTileClick = () => {
