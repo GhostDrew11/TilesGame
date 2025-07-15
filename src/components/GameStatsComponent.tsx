@@ -13,14 +13,14 @@ const GameStatsComponent = ({
 }: GameStatsProps) => {
   const getPhaseDisplay = (): string => {
     switch (stats.phase) {
+      case "setup":
+        return "Ready to Play";
       case "study":
         return "Study Phase - Memorize the tiles!";
       case "play":
         return "Play Phase - Find the matches!";
       case "results":
         return "Game Complete!";
-      default:
-        return "";
     }
   };
 
@@ -30,21 +30,24 @@ const GameStatsComponent = ({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const getProgressPercentage = (): number => {
+    const totalPairs = config.gridSize / 2;
+    return totalPairs > 0 ? (stats.matches / totalPairs) * 100 : 0;
+  };
+
   return (
     <div className="stats-container">
       <div className="phase-indicator">
         <h2 className="phase-title">{getPhaseDisplay()}</h2>
-        <div className="timer">
-          <div>Time: {formatTime(timeRemaining)}</div>
-        </div>
+        {(stats.phase === "study" || stats.phase === "play") && (
+          <div className="timer">Time: {formatTime(timeRemaining)}</div>
+        )}
       </div>
 
       <div className="stats-grid">
         <div className="stat-item">
-          <div className="stat-number stat-number--primary">
-            {stats.tilesClicked}
-          </div>
-          <div className="stat-label">Tiles Clicked</div>
+          <div className="stat-number stat-number--primary">{stats.score}</div>
+          <div className="stat-label">Score</div>
         </div>
         <div className="stat-item">
           <div className="stat-number stat-number--success">
@@ -54,11 +57,31 @@ const GameStatsComponent = ({
         </div>
         <div className="stat-item">
           <div className="stat-number stat-number--info">
+            {stats.tilesClicked}
+          </div>
+          <div className="stat-label">Tiles Clicked</div>
+        </div>
+        <div className="stat-item">
+          <div className="stat-number stat-number--warning">
             {config.gridSize / 2}
           </div>
           <div className="stat-label">Total Pairs</div>
         </div>
       </div>
+
+      {stats.phase === "play" && (
+        <div className="progress-container">
+          <div className="progress-label">
+            Progress: {Math.round(getProgressPercentage())}%
+          </div>
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${getProgressPercentage()}%` }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
