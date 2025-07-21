@@ -2,6 +2,6 @@ export {};
 
 declare global {
   interface Window {
-    gameStorage?: Record<string, string>;
+    memoryGameStorage?: Record<string, string>;
   }
 }
