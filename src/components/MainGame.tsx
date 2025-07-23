@@ -118,7 +118,8 @@ const MainGame = () => {
 
   const isGameDisabled =
     gameStats.phase === "study" || gameStats.phase === "results";
-  const gridColumns = Math.sqrt(config.gridSize);
+  const gridColumns = 4;
+  const gridRows = config.gridSize === 16 ? 4 : config.gridSize === 12 ? 3 : 2;
 
   return (
     <div className="game-container">
@@ -151,7 +152,10 @@ const MainGame = () => {
 
           <div
             className="tile-grid"
-            style={{ gridTemplateColumns: `repeat(${gridColumns}, 1fr)` }}
+            style={{
+              gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
+              gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+            }}
           >
             {tiles.map((tile) => (
               <TileComponent
