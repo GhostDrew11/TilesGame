@@ -53,40 +53,19 @@ const MainGame = () => {
     if (gameStats.phase === "study") {
       startPlayPhase();
     } else if (gameStats.phase === "play") {
-      endGame();
+      const newHighScore = endGame();
+
+      setHighScores((prev) =>
+        [...prev, newHighScore].sort((a, b) => b.score - a.score)
+      );
     }
-  }, [gameStats.phase, startPlayPhase, endGame]);
+  }, [gameStats.phase, startPlayPhase, endGame, setHighScores]);
 
   const { timeRemaining, resetTimer } = useGameTimer(
     currentPhaseTime,
     isTimerActive,
     handleTimeUp
   );
-
-  // Save high score when game ends
-  useEffect(() => {
-    if (gameStats.phase === "results" && gameStats.score > 0) {
-      const newScore: HighScore = {
-        score: gameStats.score,
-        matches: gameStats.matches,
-        timeElapsed: gameStats.tilesClicked, // Using clicks as time proxy
-        difficulty: config.difficulty,
-        date: new Date().toLocaleDateString(),
-      };
-
-      setHighScores(
-        (prev) =>
-          [...prev, newScore].sort((a, b) => b.score - a.score).slice(0, 10) // Keep top 10
-      );
-    }
-  }, [
-    config.difficulty,
-    gameStats.phase,
-    gameStats.score,
-    gameStats.matches,
-    gameStats.tilesClicked,
-    setHighScores,
-  ]);
 
   // Reset timer when phase changes
   useEffect(() => {
@@ -99,9 +78,19 @@ const MainGame = () => {
       gameStats.phase === "play" &&
       gameStats.matches === config.gridSize / 2
     ) {
-      endGame();
+      const newHighScore = endGame();
+
+      setHighScores((prev) =>
+        [...prev, newHighScore].sort((a, b) => b.score - a.score)
+      );
     }
-  }, [gameStats.matches, gameStats.phase, config.gridSize, endGame]);
+  }, [
+    gameStats.matches,
+    gameStats.phase,
+    config.gridSize,
+    endGame,
+    setHighScores,
+  ]);
 
   const handleConfigChange = (newConfig: GameConfig) => {
     setConfig(newConfig);

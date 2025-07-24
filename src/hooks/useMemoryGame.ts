@@ -92,6 +92,14 @@ export const useMemoryGame = (config: GameConfig) => {
       config.difficulty
     );
     setGameStats((prev) => ({ ...prev, phase: "results", score: finalScore }));
+
+    return {
+      score: finalScore,
+      matches: gameStats.matches,
+      timeElapsed: gameStats.tilesClicked,
+      difficulty: config.difficulty,
+      date: new Date().toLocaleDateString(),
+    };
   }, [
     gameStats.matches,
     gameStats.tilesClicked,
