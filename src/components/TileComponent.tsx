@@ -8,14 +8,11 @@ type TileProps = {
 };
 
 const TileComponent = ({ tile, onTileClick, disabled }: TileProps) => {
-  const handleTileClick = useCallback(
-    () => () => {
-      if (!disabled && tile?.state === "hidden") {
-        onTileClick(tile?.id);
-      }
-    },
-    [disabled, tile?.state, tile?.id, onTileClick]
-  );
+  const handleTileClick = useCallback(() => {
+    if (!disabled && tile.state === "hidden") {
+      onTileClick(tile.id);
+    }
+  }, [disabled, tile.state, tile.id, onTileClick]);
 
   const getTileClass = (): string => {
     const baseClass = "tile";
