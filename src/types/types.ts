@@ -51,5 +51,5 @@ export interface ThemeConfig {
   tileHidden: string;
   tileRevealed: string;
   tileMatched: string;
-  tiledMismatched: string;
+  tileMismatched: string;
 }
