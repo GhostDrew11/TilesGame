@@ -6,9 +6,10 @@ export const useGameTimer = (
   onTimeUp: () => void
 ) => {
   const [timeRemaining, setTimeRemaining] = useState(initialDuration);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (!isActive || timeRemaining <= 0) return;
+    if (!isActive || isPaused || timeRemaining <= 0) return;
 
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -21,11 +22,15 @@ export const useGameTimer = (
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeRemaining, isActive, onTimeUp]);
+  }, [timeRemaining, isActive, isPaused, onTimeUp]);
 
   const resetTimer = useCallback((newTime: number) => {
     setTimeRemaining(newTime);
+    setIsPaused(false);
   }, []);
 
-  return { timeRemaining, resetTimer };
+  const pauseTimer = useCallback(() => setIsPaused(true), []);
+  const resumeTimer = useCallback(() => setIsPaused(false), []);
+
+  return { timeRemaining, isPaused, resetTimer, pauseTimer, resumeTimer };
 };
