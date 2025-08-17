@@ -1,6 +1,6 @@
 import type { SoundType } from "../../types/types";
 
-class SoundManager {
+export default class SoundManager {
   private enabled: boolean = true;
   private sounds: Map<SoundType, string> = new Map([
     ["flip", "🔄"],

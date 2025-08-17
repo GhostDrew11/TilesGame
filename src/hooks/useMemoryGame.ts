@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type {
   GameStats,
   GameConfig,
@@ -7,17 +7,26 @@ import type {
   GameDifficulty,
 } from "../types/types";
 import { shuffleArray } from "../utils/helpers";
+import { SoundManager } from "../types/SoundManager";
 
 export const useMemoryGame = (config: GameConfig) => {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [gameStats, setGameStats] = useState<GameStats>({
     tilesClicked: 0,
     matches: 0,
+    mismatches: 0,
     timeElapsed: 0,
     phase: "setup",
     score: 0,
+    accuracy: 0,
   });
   const [selectedTiles, setSelectedTiles] = useState<number[]>([]);
+  const [soundManager] = useState(() => new SoundManager());
+
+  // Update sound manager when config changes
+  useEffect(() => {
+    soundManager.setEnabled(config.enableSound);
+  }, [config.enableSound, soundManager]);
 
   // Generate tile symbols based on difficulty
   const getTileSymbols = useCallback((difficulty: GameDifficulty): string[] => {
@@ -43,12 +52,14 @@ export const useMemoryGame = (config: GameConfig) => {
           value: symbol,
           state: "revealed",
           pairId: i,
+          animationDelay: config.enableAnimations ? Math.random() * 0.5 : 0,
         },
         {
           id: i * 2 + 1,
           value: symbol,
           state: "revealed",
           pairId: i,
+          animationDelay: config.enableAnimations ? Math.random() * 0.5 : 0,
         }
       );
     }
@@ -56,7 +67,12 @@ export const useMemoryGame = (config: GameConfig) => {
     // Shuffle the pairs
     const shuffled = shuffleArray(pairs);
     setTiles(shuffled);
-  }, [config.difficulty, config.gridSize, getTileSymbols]);
+  }, [
+    config.difficulty,
+    config.gridSize,
+    config.enableAnimations,
+    getTileSymbols,
+  ]);
 
   // Calculate score based on difficulty and performance
   const calculateScore = useCallback(
@@ -68,6 +84,15 @@ export const useMemoryGame = (config: GameConfig) => {
       ];
 
       return Math.round(baseScore * efficiency * difficultyMultiplier);
+    },
+    []
+  );
+
+  // Calculate Accuracy
+  const calculateAccuracy = useCallback(
+    (matches: number, totalClicks: number): number => {
+      if (totalClicks === 0) return 0;
+      return Math.round(((matches * 2) / totalClicks) * 100);
     },
     []
   );
@@ -85,17 +110,41 @@ export const useMemoryGame = (config: GameConfig) => {
     setGameStats((prev) => ({ ...prev, phase: "play" }));
   }, []);
 
+  // Pause/Resume functions
+  const pauseGame = useCallback(() => {
+    setGameStats((prev) => ({ ...prev, phase: "paused" }));
+  }, []);
+
+  const resumeGame = useCallback(() => {
+    setGameStats((prev) => ({ ...prev, phase: "play" }));
+  }, []);
+
   const endGame = useCallback(() => {
     const finalScore = calculateScore(
       gameStats.matches,
       gameStats.tilesClicked,
       config.difficulty
     );
-    setGameStats((prev) => ({ ...prev, phase: "results", score: finalScore }));
+    const accuracy = calculateAccuracy(
+      gameStats.matches,
+      gameStats.tilesClicked
+    );
+    setGameStats((prev) => ({
+      ...prev,
+      phase: "results",
+      score: finalScore,
+      accuracy,
+    }));
 
+    // Play win/lose sound
+    const totalPairs = config.gridSize / 2;
+    soundManager.play(gameStats.matches >= totalPairs ? "win" : "lose");
+
+    // Return high score object for parent component to handle
     return {
       score: finalScore,
       matches: gameStats.matches,
+      accuracy,
       timeElapsed: gameStats.tilesClicked,
       difficulty: config.difficulty,
       date: new Date().toLocaleDateString(),
@@ -104,7 +153,10 @@ export const useMemoryGame = (config: GameConfig) => {
     gameStats.matches,
     gameStats.tilesClicked,
     config.difficulty,
+    config.gridSize,
     calculateScore,
+    calculateAccuracy,
+    soundManager,
   ]);
 
   // Handle tile clicks with enhanced feedback
@@ -154,12 +206,14 @@ export const useMemoryGame = (config: GameConfig) => {
             setGameStats((prev) => ({
               ...prev,
               matches: prev.matches + 1,
+              accuracy: calculateAccuracy(prev.matches + 1, prev.tilesClicked),
               score: calculateScore(
                 prev.matches + 1,
                 prev.tilesClicked,
                 config.difficulty
               ),
             }));
+            soundManager.play("match");
           } else {
             //No match - hide tiles
             setTiles((prev) =>
