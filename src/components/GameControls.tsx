@@ -1,5 +1,5 @@
-import { Pause, Play, RotateCcw } from "lucide-react";
 import type { GamePhase } from "../types/types";
+import type { Theme } from "../themes";
 
 type GameControlsProps = {
   phase: GamePhase;
@@ -7,6 +7,7 @@ type GameControlsProps = {
   onResume: () => void;
   onReset: () => void;
   onSkip?: () => void;
+  theme: Theme;
 };
 
 const GameControls = ({
@@ -15,26 +16,43 @@ const GameControls = ({
   onResume,
   onReset,
   onSkip,
+  theme,
 }: GameControlsProps) => {
   return (
     <div className="game-controls">
       {phase === "play" && (
-        <button onClick={onPause} className="control-button pause-button">
-          <Pause className="icon" /> Pause
+        <button
+          onClick={onPause}
+          className="control-button pause-button"
+          style={{ background: theme.primaryColor }}
+        >
+          ⏸️ Pause
         </button>
       )}
       {phase === "paused" && (
-        <button onClick={onResume} className="control-button resume-button">
-          <Play className="icon" /> Resume
+        <button
+          onClick={onResume}
+          className="control-button resume-button"
+          style={{ background: theme.successColor }}
+        >
+          ▶️ Resume
         </button>
       )}
       {phase === "study" && onSkip && (
-        <button onClick={onSkip} className="control-button skip-button">
-          Skip to Play
+        <button
+          onClick={onSkip}
+          className="control-button skip-button"
+          style={{ background: "#fbbf24" }}
+        >
+          ⏭️ Skip to Play
         </button>
       )}
-      <button onClick={onReset} className="control-button reset-button">
-        <RotateCcw className="icon" /> Reset
+      <button
+        onClick={onReset}
+        className="control-button reset-button"
+        style={{ background: theme.errorColor }}
+      >
+        🔄 Reset
       </button>
     </div>
   );
