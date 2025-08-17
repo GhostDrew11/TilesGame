@@ -129,6 +129,7 @@ export const useMemoryGame = (config: GameConfig) => {
       gameStats.matches,
       gameStats.tilesClicked
     );
+
     setGameStats((prev) => ({
       ...prev,
       phase: "results",
@@ -166,6 +167,8 @@ export const useMemoryGame = (config: GameConfig) => {
 
       const tile = tiles.find((t) => t.id === tileId);
       if (!tile || tile.state !== "hidden") return;
+
+      soundManager.play("flip");
 
       // Reveal the clicked Tile
       setTiles((prev) =>
@@ -207,15 +210,10 @@ export const useMemoryGame = (config: GameConfig) => {
               ...prev,
               matches: prev.matches + 1,
               accuracy: calculateAccuracy(prev.matches + 1, prev.tilesClicked),
-              score: calculateScore(
-                prev.matches + 1,
-                prev.tilesClicked,
-                config.difficulty
-              ),
             }));
             soundManager.play("match");
           } else {
-            //No match - hide tiles
+            //No match - show mismatch state temporarily
             setTiles((prev) =>
               prev.map((t) =>
                 t.id === firstId || t.id === secondId
@@ -223,13 +221,30 @@ export const useMemoryGame = (config: GameConfig) => {
                   : t
               )
             );
+            setGameStats((prev) => ({
+              ...prev,
+              mismatches: prev.mismatches + 1,
+              accuracy: calculateAccuracy(prev.matches, prev.tilesClicked),
+            }));
+            soundManager.play("mismatch");
+
+            // Hide tiles after showing mismatch
+            setTimeout(() => {
+              setTiles((prev) =>
+                prev.map((t) =>
+                  t.id === firstId || t.id === secondId
+                    ? { ...t, state: "hidden" as TileState }
+                    : t
+                )
+              );
+            }, 1000);
           }
 
           setSelectedTiles([]);
         }, 1000);
       }
     },
-    [tiles, selectedTiles, gameStats.phase, calculateScore, config.difficulty]
+    [tiles, selectedTiles, gameStats.phase, soundManager, calculateAccuracy]
   );
 
   // Reset Game
@@ -237,9 +252,11 @@ export const useMemoryGame = (config: GameConfig) => {
     setGameStats({
       tilesClicked: 0,
       matches: 0,
+      mismatches: 0,
       timeElapsed: 0,
       phase: "setup",
       score: 0,
+      accuracy: 0,
     });
     setSelectedTiles([]);
     setTiles([]);
@@ -253,6 +270,8 @@ export const useMemoryGame = (config: GameConfig) => {
     handleTileClick,
     startStudyPhase,
     startPlayPhase,
+    pauseGame,
+    resumeGame,
     endGame,
     resetGame,
     initializeTiles,
