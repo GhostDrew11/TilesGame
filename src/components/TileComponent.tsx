@@ -1,35 +1,54 @@
 import { useCallback } from "react";
 import type { Tile } from "../types/types";
+import type { Theme } from "../themes";
 
 type TileProps = {
   tile: Tile;
   onTileClick: (id: number) => void;
   disabled: boolean;
+  theme: Theme;
+  enableAnimations: boolean;
 };
 
-const TileComponent = ({ tile, onTileClick, disabled }: TileProps) => {
+const TileComponent = ({
+  tile,
+  onTileClick,
+  disabled,
+  theme,
+  enableAnimations,
+}: TileProps) => {
   const handleTileClick = useCallback(() => {
     if (!disabled && tile.state === "hidden") {
       onTileClick(tile.id);
     }
   }, [disabled, tile.state, tile.id, onTileClick]);
 
-  const getTileClass = (): string => {
-    const baseClass = "tile";
-    switch (tile?.state) {
+  const getTileStyles = () => {
+    const baseStyles = {
+      animationDelay: enableAnimations
+        ? `${(tile.animationDelay || 0) * 1000}ms`
+        : "0ms",
+    };
+
+    switch (tile.state) {
       case "matched":
-        return `${baseClass} tile--matched`;
+        return { ...baseStyles, background: theme.tileMatched };
       case "revealed":
-        return `${baseClass} tile--revealed`;
+        return { ...baseStyles, background: theme.tileRevealed };
+      case "mismatched":
+        return { ...baseStyles, background: theme.tileMismatched };
       default:
-        return `${baseClass} tile--hidden`;
+        return { ...baseStyles, background: theme.tileHidden };
     }
   };
 
   return (
     <button
       onClick={handleTileClick}
-      className={getTileClass()}
+      className={`tile tile--${tile.state} ${
+        enableAnimations ? "tile--animated" : ""
+      }`}
+      style={getTileStyles()}
       disabled={disabled || tile.state !== "hidden"}
       aria-label={
         tile.state !== "hidden" ? `Tile ${tile.value}` : "Hidden tile"
