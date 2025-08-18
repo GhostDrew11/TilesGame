@@ -1,9 +1,11 @@
-import type { GameConfig, GameStats } from "../types/types";
+import type { GameConfig, GameStats, ThemeConfig } from "../types/types";
 
 type GameStatsProps = {
   stats: GameStats;
   config: GameConfig;
   timeRemaining: number;
+  isPaused: boolean;
+  theme: ThemeConfig;
 };
 
 const GameStatsComponent = ({
@@ -21,6 +23,8 @@ const GameStatsComponent = ({
         return "Play Phase - Find the matches!";
       case "results":
         return "Game Complete!";
+      default:
+        return "Ready to play";
     }
   };
 
