@@ -12,6 +12,8 @@ const GameStatsComponent = ({
   stats,
   config,
   timeRemaining,
+  isPaused,
+  theme,
 }: GameStatsProps) => {
   const getPhaseDisplay = (): string => {
     switch (stats.phase) {
@@ -40,36 +42,65 @@ const GameStatsComponent = ({
   };
 
   return (
-    <div className="stats-container">
+    <div
+      className="stats-container"
+      style={{ background: theme.cardBackground, color: theme.textColor }}
+    >
       <div className="phase-indicator">
         <h2 className="phase-title">{getPhaseDisplay()}</h2>
-        {(stats.phase === "study" || stats.phase === "play") && (
-          <div className="timer">Time: {formatTime(timeRemaining)}</div>
+        {(stats.phase === "study" ||
+          stats.phase === "play" ||
+          stats.phase === "paused") && (
+          <div
+            className={`timer ${isPaused ? "timer--paused" : ""}`}
+            style={{
+              color: isPaused ? "#fbbf24" : theme.primaryColor,
+              background: isPaused
+                ? "rgba(251, 191, 36, 0.1)"
+                : "rgba(0,0,0,0.05)",
+            }}
+          >
+            {isPaused ? "⏸️" : "⏰"} {formatTime(timeRemaining)}
+          </div>
         )}
       </div>
 
       <div className="stats-grid">
         <div className="stat-item">
-          <div className="stat-number stat-number--primary">{stats.score}</div>
+          <div
+            className="stat-number stat-number--primary"
+            style={{ color: theme.primaryColor }}
+          >
+            {stats.score}
+          </div>
           <div className="stat-label">Score</div>
         </div>
         <div className="stat-item">
-          <div className="stat-number stat-number--success">
+          <div
+            className="stat-number stat-number--success"
+            style={{ color: theme.successColor }}
+          >
             {stats.matches}
           </div>
-          <div className="stat-label">Matches Found</div>
+          <div className="stat-label">Matches</div>
         </div>
         <div className="stat-item">
-          <div className="stat-number stat-number--info">
-            {stats.tilesClicked}
+          <div
+            className="stat-number stat-number--info"
+            style={{ color: "#6b7280" }}
+          >
+            {stats.accuracy}%
           </div>
-          <div className="stat-label">Tiles Clicked</div>
+          <div className="stat-label">Accuracy</div>
         </div>
         <div className="stat-item">
-          <div className="stat-number stat-number--warning">
-            {config.gridSize / 2}
+          <div
+            className="stat-number stat-number--warning"
+            style={{ color: theme.errorColor }}
+          >
+            {stats.mismatches}
           </div>
-          <div className="stat-label">Total Pairs</div>
+          <div className="stat-label">Mismatches</div>
         </div>
       </div>
 
@@ -81,7 +112,10 @@ const GameStatsComponent = ({
           <div className="progress-bar">
             <div
               className="progress-fill"
-              style={{ width: `${getProgressPercentage()}%` }}
+              style={{
+                width: `${getProgressPercentage()}%`,
+                background: theme.successColor,
+              }}
             />
           </div>
         </div>

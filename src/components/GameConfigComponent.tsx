@@ -1,7 +1,6 @@
 import {
   type GameConfig,
   type GameDifficulty,
-  type GameTheme,
   type ThemeConfig,
 } from "../types/types";
 
@@ -70,32 +69,6 @@ const GameConfigComponent = ({
               }}
             >
               {diff.charAt(0).toUpperCase() + diff.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="config-section">
-        <label className="config-label">Theme:</label>
-        <div className="theme-buttons">
-          {Object.keys(theme).map((themeOption) => (
-            <button
-              key={themeOption}
-              onClick={() => updateConfig("theme", themeOption as GameTheme)}
-              className={`theme-btn ${
-                config.theme === themeOption ? "theme-btn--active" : ""
-              }`}
-              style={{
-                borderColor:
-                  config.theme === themeOption ? theme.primaryColor : "#e5e7eb",
-                background:
-                  config.theme === themeOption
-                    ? theme.primaryColor
-                    : "transparent",
-                color: config.theme === themeOption ? "white" : theme.textColor,
-              }}
-            >
-              {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
             </button>
           ))}
         </div>
