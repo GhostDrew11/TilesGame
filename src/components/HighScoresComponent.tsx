@@ -1,14 +1,22 @@
-import type { HighScore } from "../types/types";
+import type { HighScore, ThemeConfig } from "../types/types";
 
 type HighScoresProps = {
   highScores: HighScore[];
   currentScore?: number;
+  theme: ThemeConfig;
 };
 
-const HighScoresComponent = ({ highScores, currentScore }: HighScoresProps) => {
+const HighScoresComponent = ({
+  highScores,
+  currentScore,
+  theme,
+}: HighScoresProps) => {
   return (
-    <div className="highscores-container">
-      <h3 className="highscores-title">High Scores</h3>
+    <div
+      className="highscores-container"
+      style={{ background: theme.cardBackground, color: theme.textColor }}
+    >
+      <h3 className="highscores-title">🏆 High Scores</h3>
       {highScores.length === 0 ? (
         <p className="no-scores">No high scores yet!</p>
       ) : (
@@ -19,11 +27,18 @@ const HighScoresComponent = ({ highScores, currentScore }: HighScoresProps) => {
               className={`score-item ${
                 currentScore === score.score ? "score-item--current" : ""
               }`}
+              style={{
+                background:
+                  currentScore === score.score
+                    ? theme.primaryColor
+                    : "rgba(0,0,0,0.05)",
+                color: currentScore === score.score ? "white" : theme.textColor,
+              }}
             >
               <span className="score-rank">#{index + 1}</span>
-              <span className="score-value">{score.score}</span>
+              <span className="score-value">{score.score} pts</span>
               <span className="score-difficulty">{score.difficulty}</span>
-              <span className="score-date">{score.date}</span>
+              <span className="score-accuracy">{score.accuracy}%</span>
             </div>
           ))}
         </div>
