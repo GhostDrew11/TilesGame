@@ -55,9 +55,7 @@ const GameConfigComponent = ({
             <button
               key={diff}
               onClick={() => handleDifficultyChange(diff)}
-              className={`difficulty-btn ${
-                config.difficulty === diff ? "difficulty-btn--active" : ""
-              }`}
+              className={"difficulty-btn"}
               style={{
                 borderColor:
                   config.difficulty === diff ? theme.primaryColor : "#e5e7eb",

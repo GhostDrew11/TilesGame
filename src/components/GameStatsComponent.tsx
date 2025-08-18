@@ -67,37 +67,25 @@ const GameStatsComponent = ({
 
       <div className="stats-grid">
         <div className="stat-item">
-          <div
-            className="stat-number stat-number--primary"
-            style={{ color: theme.primaryColor }}
-          >
+          <div className="stat-number" style={{ color: theme.primaryColor }}>
             {stats.score}
           </div>
           <div className="stat-label">Score</div>
         </div>
         <div className="stat-item">
-          <div
-            className="stat-number stat-number--success"
-            style={{ color: theme.successColor }}
-          >
+          <div className="stat-number" style={{ color: theme.successColor }}>
             {stats.matches}
           </div>
           <div className="stat-label">Matches</div>
         </div>
         <div className="stat-item">
-          <div
-            className="stat-number stat-number--info"
-            style={{ color: "#6b7280" }}
-          >
+          <div className="stat-number" style={{ color: "#6b7280" }}>
             {stats.accuracy}%
           </div>
           <div className="stat-label">Accuracy</div>
         </div>
         <div className="stat-item">
-          <div
-            className="stat-number stat-number--warning"
-            style={{ color: theme.errorColor }}
-          >
+          <div className="stat-number" style={{ color: theme.errorColor }}>
             {stats.mismatches}
           </div>
           <div className="stat-label">Mismatches</div>

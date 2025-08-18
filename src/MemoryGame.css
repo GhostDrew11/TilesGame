@@ -16,9 +16,9 @@ html {
   flex-direction: column;
   align-items: center;
   padding: 3.2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.3s ease;
 }
 
 .game-header {
@@ -38,11 +38,6 @@ html {
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.76rem;
   margin-bottom: 0;
-}
-
-.header-contols {
-  display: flex;
-  gap: 1rem;
 }
 
 .setup-layout {
@@ -76,17 +71,16 @@ html {
 }
 
 .config-container {
-  background: white;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 3.2rem;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .config-title {
   font-size: 2.4rem;
   font-weight: 600;
-  color: #333;
   margin-bottom: 2.4rem;
   text-align: center;
 }
@@ -98,40 +92,50 @@ html {
 .config-label {
   display: block;
   font-weight: 600;
-  color: #555;
   margin-bottom: 0.8rem;
 }
 
-.difficulty-buttons {
+.difficulty-buttons,
+.theme-buttons {
   display: flex;
   gap: 0.8rem;
 }
 
-.difficulty-btn {
+.difficulty-btn,
+.theme-btn {
   flex: 1;
   padding: 1.2rem 1.6rem;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  background: white;
-  color: #374151;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.difficulty-btn:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
+.difficulty-btn:hover,
+.theme-btn:hover {
+  transform: translateY(-1px);
 }
 
-.difficulty-btn--active {
-  border-color: #667eea;
-  background: #667eea;
-  color: white;
+.theme-btn-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.8rem;
 }
 
+.config-toggles {
+  display: flex;
+  gap: 1.6rem;
+}
+
+.config-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+}
 .config-info {
-  background: #f8f9fa;
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   padding: 1.6rem;
   margin-bottom: 2.4rem;
@@ -141,7 +145,6 @@ html {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.8rem;
-  color: #555;
 }
 
 .config-detail:last-child {
@@ -157,7 +160,6 @@ html {
   padding: 1.6rem;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
   font-size: 1.76rem;
   font-weight: 600;
@@ -170,13 +172,13 @@ html {
 }
 
 .stats-container {
-  background: white;
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 3.2rem;
   margin-bottom: 3.2rem;
   min-width: 500px;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .phase-indicator {
@@ -187,18 +189,30 @@ html {
 .phase-title {
   font-size: 2.4rem;
   font-weight: 600;
-  color: #333;
   margin-bottom: 0.8rem;
 }
 
 .timer {
   font-size: 2rem;
   font-weight: bold;
-  color: #667eea;
-  background: #f8f9ff;
   padding: 0.8rem 1.6rem;
   border-radius: 8px;
   display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.timer--paused {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .stats-grid {
@@ -216,19 +230,6 @@ html {
   font-size: 3.2rem;
   font-weight: bold;
   margin-bottom: 0.4rem;
-}
-
-.stat-number--primary {
-  color: #667eea;
-}
-.stat-number--success {
-  color: #10b981;
-}
-.stat-number--info {
-  color: #6b7280;
-}
-.stat-number--warning {
-  color: #f59e0b;
 }
 
 .stat-label {
@@ -258,7 +259,6 @@ html {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #10b981, #059669);
   transition: width 0.3s ease;
 }
 
@@ -267,61 +267,54 @@ html {
   gap: 1.2rem;
   margin-bottom: 3.2rem;
   padding: 2.4rem;
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
-}
-
-.tile-grid {
-  display: grid;
-  gap: 1.2rem;
-  margin-bottom: 3.2rem;
-  padding: 2.4rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .tile {
-  width: 12.8rem;
-  height: 12.8rem;
-  border: 0.48rem solid transparent;
-  border-radius: 1.92rem;
-  font-size: 2.88rem;
+  width: 8rem;
+  height: 8rem;
+  border: 0.3rem solid transparent;
+  border-radius: 1.2rem;
+  font-size: 1.8rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0.64rem 1.92rem rgba(0, 0, 0, 0.15);
+  color: white;
 }
 
+.tile--animated {
+  animation: tileAppear 0.6s ease-out forwards;
+}
 .tile:hover:not(:disabled) {
   transform: scale(1.05) translateY(-0.32rem);
   box-shadow: 0 1.28rem 3.84rem rgba(0, 0, 0, 0.2);
 }
 
-.tile--hidden {
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  color: #6c757d;
-  border-color: #dee2e6;
-}
-
-.tile--revealed {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-color: #667eea;
-  transform: rotateY(180deg);
-}
-
 .tile--matched {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border-color: #10b981;
   cursor: default;
-  animation: matchPulse 0.6s ease-in-out;
+  animation: matchPulse 0.8s ease-in-out;
+}
+
+.tile--mismatched {
+  animation: shakeTile 0.5s ease-in-out;
+}
+
+@keyframes tileAppear {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 @keyframes matchPulse {
@@ -329,134 +322,160 @@ html {
   100% {
     transform: scale(1);
   }
-  25% {
-    transform: scale(1.1) rotate(5deg);
-  }
   50% {
-    transform: scale(1.15) rotate(-5deg);
-  }
-  75% {
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.1);
   }
 }
 
-.controls {
+@keyframes shakeTile {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.game-controls {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.reset-button,
-.skip-button {
-  padding: 0.75rem 1.5rem;
+.control-button {
+  padding: 1.2rem 1.8rem;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.reset-button {
-  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
-.skip-button {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
-}
-
-.reset-button:hover,
-.skip-button:hover {
+.control-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .highscores-container {
-  background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: 2.4rem;
+  margin-bottom: 3.2rem;
   min-width: 400px;
   backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
 .highscores-title {
-  font-size: 1.25rem;
+  font-size: 2rem;
   font-weight: 600;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 1.6rem;
   text-align: center;
 }
 
 .no-scores {
   text-align: center;
-  color: #666;
   font-style: italic;
 }
 
 .scores-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .score-item {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
-  gap: 1rem;
-  padding: 0.75rem;
-  background: #f8f9fa;
+  gap: 1.6rem;
+  padding: 1.2rem;
   border-radius: 8px;
   align-items: center;
   transition: all 0.2s ease;
 }
 
 .score-item--current {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: white;
   transform: scale(1.02);
   box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
 }
 
 .score-rank {
   font-weight: bold;
-  color: #667eea;
   min-width: 30px;
-}
-
-.score-item--current .score-rank {
-  color: white;
 }
 
 .score-value {
   font-weight: bold;
-  font-size: 1.6rem;
+  font-size: 3.2rem;
 }
 
 .score-difficulty {
-  font-size: 0.875rem;
-  padding: 0.25rem 0.5rem;
-  background: #e5e7eb;
+  font-size: 1.4rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 4px;
   text-transform: capitalize;
 }
 
-.score-item--current .score-difficulty {
-  background: rgba(255, 255, 255, 0.2);
+.score-accuracy {
+  font-size: 1.2rem;
 }
 
-.score-date {
-  font-size: 0.75rem;
-  color: #6b7280;
+/* Theme Switcher Styles */
+.theme-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border: 2px solid;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
 }
 
-.score-item--current .score-date {
-  color: rgba(255, 255, 255, 0.8);
+.theme-switcher:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
+.theme-switcher:active {
+  transform: scale(0.95);
+}
+
+.theme-icon {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.theme-switcher:hover .theme-icon {
+  transform: rotate(15deg);
+}
+
+/* Global animation for sound feedback */
+@keyframes soundFeedback {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2) translateY(-20px);
+    opacity: 0;
+  }
+}
 @media (max-width: 768px) {
   .game-container {
     padding: 1.6rem;
@@ -476,12 +495,12 @@ html {
   .highscores-container {
     min-width: auto;
     width: 100%;
-    max-width: 80rem;
+    max-width: 50rem;
   }
 
   .tile {
-    width: 9.6rem;
-    height: 9.6rem;
+    width: 6rem;
+    height: 6rem;
     font-size: 2.24rem;
   }
 
@@ -494,31 +513,8 @@ html {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .controls {
-    flex-direction: column;
-    width: 100%;
-    max-width: 48rem;
-  }
-
-  .tutorial-notes {
-    max-width: none;
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .tile {
-    width: 8rem;
-    height: 8rem;
-    font-size: 1.92rem;
-  }
-
-  .score-item {
-    grid-template-columns: auto 1fr auto;
-    gap: 0.8rem;
-  }
-
-  .score-date {
-    display: none;
+  .game-controls {
+    flex-direction: wrap;
+    justify-content: center;
   }
 }
