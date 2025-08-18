@@ -1,15 +1,22 @@
-import { type GameConfig, type GameDifficulty } from "../types/types";
+import {
+  type GameConfig,
+  type GameDifficulty,
+  type GameTheme,
+  type ThemeConfig,
+} from "../types/types";
 
 type GameConfigProps = {
   config: GameConfig;
   onConfigChange: (config: GameConfig) => void;
   onStartGame: () => void;
+  theme: ThemeConfig;
 };
 
 const GameConfigComponent = ({
   config,
   onConfigChange,
   onStartGame,
+  theme,
 }: GameConfigProps) => {
   const handleDifficultyChange = (difficulty: GameDifficulty) => {
     const configs = {
@@ -28,8 +35,18 @@ const GameConfigComponent = ({
     });
   };
 
+  const updateConfig = <K extends keyof GameConfig>(
+    key: K,
+    value: GameConfig[K]
+  ) => {
+    onConfigChange({ ...config, [key]: value });
+  };
+
   return (
-    <div className="config-container">
+    <div
+      className="config-container"
+      style={{ background: theme.cardBackground, color: theme.textColor }}
+    >
       <h2 className="config-title">Game Configuration</h2>
 
       <div className="config-section">
@@ -42,10 +59,70 @@ const GameConfigComponent = ({
               className={`difficulty-btn ${
                 config.difficulty === diff ? "difficulty-btn--active" : ""
               }`}
+              style={{
+                borderColor:
+                  config.difficulty === diff ? theme.primaryColor : "#e5e7eb",
+                background:
+                  config.difficulty === diff
+                    ? theme.primaryColor
+                    : "transparent",
+                color: config.difficulty === diff ? "white" : theme.textColor,
+              }}
             >
               {diff.charAt(0).toUpperCase() + diff.slice(1)}
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="config-section">
+        <label className="config-label">Theme:</label>
+        <div className="theme-buttons">
+          {Object.keys(theme).map((themeOption) => (
+            <button
+              key={themeOption}
+              onClick={() => updateConfig("theme", themeOption as GameTheme)}
+              className={`theme-btn ${
+                config.theme === themeOption ? "theme-btn--active" : ""
+              }`}
+              style={{
+                borderColor:
+                  config.theme === themeOption ? theme.primaryColor : "#e5e7eb",
+                background:
+                  config.theme === themeOption
+                    ? theme.primaryColor
+                    : "transparent",
+                color: config.theme === themeOption ? "white" : theme.textColor,
+              }}
+            >
+              {themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="config-section">
+        <div className="config-toggles">
+          <label className="config-toggle">
+            <input
+              type="checkbox"
+              checked={config.enableSound}
+              onChange={(e) => updateConfig("enableSound", e.target.checked)}
+              style={{ accentColor: theme.primaryColor }}
+            />
+            <span>🔊 Sound Effects</span>
+          </label>
+          <label className="config-toggle">
+            <input
+              type="checkbox"
+              checked={config.enableAnimations}
+              onChange={(e) =>
+                updateConfig("enableAnimations", e.target.checked)
+              }
+              style={{ accentColor: theme.primaryColor }}
+            />
+            <span>✨ Animations</span>
+          </label>
         </div>
       </div>
 
@@ -62,8 +139,12 @@ const GameConfigComponent = ({
         </div>
       </div>
 
-      <button onClick={onStartGame} className="start-game-btn">
-        Start Game
+      <button
+        onClick={onStartGame}
+        className="start-game-btn"
+        style={{ background: theme.primaryColor }}
+      >
+        🎮 Start Game
       </button>
     </div>
   );
