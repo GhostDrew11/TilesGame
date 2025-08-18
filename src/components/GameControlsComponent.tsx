@@ -10,7 +10,7 @@ type GameControlsProps = {
   theme: Theme;
 };
 
-const GameControls = ({
+const GameControlsComponent = ({
   phase,
   onPause,
   onResume,
@@ -58,4 +58,4 @@ const GameControls = ({
   );
 };
 
-export default GameControls;
+export default GameControlsComponent;

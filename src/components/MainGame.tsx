@@ -5,9 +5,12 @@ import GameStatsComponent from "./GameStatsComponent";
 import { useMemoryGame } from "../hooks/useMemoryGame";
 import { useGameTimer } from "../hooks/useGameTimer";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import type { GameConfig, HighScore } from "../types/types";
+import type { GameConfig, GameTheme, HighScore } from "../types/types";
 import HighScoresComponent from "./HighScoresComponent";
 import GameConfigComponent from "./GameConfigComponent";
+import themes from "../themes";
+import ThemeSwitcher from "./ThemeSwitcher";
+import GameControlsComponent from "./GameControlsComponent";
 
 const MainGame = () => {
   // Configuration state with localStorage persistence
@@ -18,6 +21,9 @@ const MainGame = () => {
       playTimeSeconds: 60,
       gridSize: 12,
       difficulty: "medium",
+      enableSound: true,
+      enableAnimations: true,
+      theme: "default",
     }
   );
 
@@ -35,6 +41,8 @@ const MainGame = () => {
     handleTileClick,
     startStudyPhase,
     startPlayPhase,
+    pauseGame,
+    resumeGame,
     endGame,
     resetGame,
   } = gameHook;
@@ -56,21 +64,27 @@ const MainGame = () => {
       const newHighScore = endGame();
 
       setHighScores((prev) =>
-        [...prev, newHighScore].sort((a, b) => b.score - a.score)
+        [...prev, newHighScore].sort((a, b) => b.score - a.score).slice(0, 10)
       );
     }
   }, [gameStats.phase, startPlayPhase, endGame, setHighScores]);
 
-  const { timeRemaining, resetTimer } = useGameTimer(
-    currentPhaseTime,
-    isTimerActive,
-    handleTimeUp
-  );
+  const { timeRemaining, isPaused, resetTimer, pauseTimer, resumeTimer } =
+    useGameTimer(currentPhaseTime, isTimerActive, handleTimeUp);
 
   // Reset timer when phase changes
   useEffect(() => {
     resetTimer(currentPhaseTime);
   }, [gameStats.phase, resetTimer, currentPhaseTime]);
+
+  // Handle pause/resume
+  useEffect(() => {
+    if (gameStats.phase === "paused") {
+      pauseTimer();
+    } else if (gameStats.phase === "play") {
+      resumeTimer();
+    }
+  }, [gameStats.phase, pauseTimer, resumeTimer]);
 
   // Check for game completion
   useEffect(() => {
@@ -81,7 +95,7 @@ const MainGame = () => {
       const newHighScore = endGame();
 
       setHighScores((prev) =>
-        [...prev, newHighScore].sort((a, b) => b.score - a.score)
+        [...prev, newHighScore].sort((a, b) => b.score - a.score).slice(0, 10)
       );
     }
   }, [
@@ -105,17 +119,40 @@ const MainGame = () => {
     resetTimer(config.studyTimeSeconds);
   };
 
+  const handlePause = () => {
+    pauseGame();
+  };
+
+  const handleResume = () => {
+    resumeGame();
+  };
+
+  const handleThemeSwitch = (newTheme: GameTheme) => {
+    setConfig((prev) => ({ ...prev, theme: newTheme }));
+  };
+
   const isGameDisabled =
     gameStats.phase === "study" || gameStats.phase === "results";
   const gridColumns = 4;
   const gridRows = config.gridSize === 16 ? 4 : config.gridSize === 12 ? 3 : 2;
+  const currentTheme = themes[config.theme];
 
   return (
-    <div className="game-container">
+    <div
+      className="game-container"
+      style={{ background: currentTheme.background }}
+    >
+      <ThemeSwitcher
+        currentTheme={config.theme}
+        onThemeChange={handleThemeSwitch}
+        theme={currentTheme}
+      />
+
       <header className="game-header">
         <h1 className="game-title">Memory Game Tutorial</h1>
         <p className="game-subtitle">
-          Enhanced game with localStorage persistence and better organization
+          Enhanced with pause/resume, sound effects, theming, and better
+          animations
         </p>
       </header>
 
@@ -125,10 +162,12 @@ const MainGame = () => {
             config={config}
             onConfigChange={handleConfigChange}
             onStartGame={handleStartGame}
+            theme={currentTheme}
           />
           <HighScoresComponent
             highScores={highScores}
             currentScore={undefined}
+            theme={currentTheme}
           />
         </div>
       ) : (
@@ -137,6 +176,8 @@ const MainGame = () => {
             stats={gameStats}
             config={config}
             timeRemaining={timeRemaining}
+            isPaused={isPaused}
+            theme={currentTheme}
           />
 
           <div
@@ -144,6 +185,7 @@ const MainGame = () => {
             style={{
               gridTemplateColumns: `repeat(${gridColumns}, 1fr)`,
               gridTemplateRows: `repeat(${gridRows}, 1fr)`,
+              background: currentTheme.cardBackground,
             }}
           >
             {tiles.map((tile) => (
@@ -152,25 +194,26 @@ const MainGame = () => {
                 tile={tile}
                 onTileClick={handleTileClick}
                 disabled={isGameDisabled}
+                theme={currentTheme}
+                enableAnimations={config.enableAnimations}
               />
             ))}
           </div>
 
-          <div className="controls">
-            <button onClick={handleReset} className="reset-button">
-              New Game
-            </button>
-            {gameStats.phase === "study" && (
-              <button onClick={startPlayPhase} className="skip-button">
-                Skip to Play
-              </button>
-            )}
-          </div>
+          <GameControlsComponent
+            phase={gameStats.phase}
+            onPause={handlePause}
+            onResume={handleResume}
+            onReset={handleReset}
+            onSkip={gameStats.phase === "study" ? startPlayPhase : undefined}
+            theme={currentTheme}
+          />
 
           {gameStats.phase === "results" && (
             <HighScoresComponent
               highScores={highScores}
               currentScore={gameStats.score}
+              theme={currentTheme}
             />
           )}
         </>
