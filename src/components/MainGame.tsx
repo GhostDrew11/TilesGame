@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import "../MemoryGame.css";
 import TileComponent from "./TileComponent";
 import GameStatsComponent from "./GameStatsComponent";
@@ -72,19 +72,19 @@ const MainGame = () => {
   const { timeRemaining, isPaused, resetTimer, pauseTimer, resumeTimer } =
     useGameTimer(currentPhaseTime, isTimerActive, handleTimeUp);
 
-  // Reset timer when phase changes
-  useEffect(() => {
-    resetTimer(currentPhaseTime);
-  }, [gameStats.phase, resetTimer, currentPhaseTime]);
+  const prevPhase = useRef(gameStats.phase);
 
-  // Handle pause/resume
   useEffect(() => {
     if (gameStats.phase === "paused") {
       pauseTimer();
-    } else if (gameStats.phase === "play") {
-      resumeTimer();
+    } else if (gameStats.phase === "play" && prevPhase.current === "paused") {
+      resumeTimer(); // Only resume from pause, don't reset
+    } else if (gameStats.phase !== prevPhase.current) {
+      resetTimer(currentPhaseTime); // Reset on any other phase change
     }
-  }, [gameStats.phase, pauseTimer, resumeTimer]);
+
+    prevPhase.current = gameStats.phase;
+  }, [gameStats.phase, currentPhaseTime, resetTimer, pauseTimer, resumeTimer]);
 
   // Check for game completion
   useEffect(() => {

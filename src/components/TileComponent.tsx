@@ -42,8 +42,6 @@ const TileComponent = ({
     }
   };
 
-  console.log(tile.state);
-
   return (
     <button
       onClick={handleTileClick}
