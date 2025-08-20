@@ -217,7 +217,7 @@ export const useMemoryGame = (config: GameConfig) => {
             setTiles((prev) =>
               prev.map((t) =>
                 t.id === firstId || t.id === secondId
-                  ? { ...t, state: "hidden" as TileState }
+                  ? { ...t, state: "mismatched" as TileState }
                   : t
               )
             );
