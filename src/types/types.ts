@@ -2,7 +2,13 @@ export type GamePhase = "setup" | "study" | "play" | "paused" | "results";
 export type TileState = "hidden" | "revealed" | "matched" | "mismatched";
 export type GameDifficulty = "easy" | "medium" | "hard";
 export type GameTheme = "default" | "dark" | "colorful";
-export type SoundType = "flip" | "match" | "mismatch" | "win" | "lose" | "tick";
+export type SoundType =
+  | "flip"
+  | "match"
+  | "mismatch"
+  | "win"
+  | "lose"
+  | "streak";
 
 export interface Tile {
   id: number;
@@ -20,17 +26,9 @@ export interface GameStats {
   phase: GamePhase;
   score: number;
   accuracy: number;
+  streak: number;
+  maxStreak: number;
 }
-
-export interface HighScore {
-  score: number;
-  matches: number;
-  accuracy: number;
-  timeElapsed: number;
-  difficulty: GameDifficulty;
-  date: string;
-}
-
 export interface GameConfig {
   studyTimeSeconds: number;
   playTimeSeconds: number;
@@ -39,6 +37,25 @@ export interface GameConfig {
   enableSound: boolean;
   enableAnimations: boolean;
   theme: GameTheme;
+}
+
+export interface HighScore {
+  score: number;
+  matches: number;
+  accuracy: number;
+  timeElapsed: number;
+  difficulty: GameDifficulty;
+  maxStreak: number;
+  date: string;
+}
+
+export interface ScoreBreakdown {
+  baseScore: number;
+  efficiencyBonus: number;
+  streakBonus: number;
+  timeBonus: number;
+  difficultyMultiplier: number;
+  finalScore: number;
 }
 
 export interface ThemeConfig {
