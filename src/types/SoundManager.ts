@@ -8,6 +8,7 @@ export class SoundManager {
     ["mismatch", "❌"],
     ["win", "🎉"],
     ["lose", "😞"],
+    ["streak", "🔥"],
   ]);
 
   setEnabled = (enabled: boolean) => {
@@ -35,6 +36,10 @@ export class SoundManager {
     `;
 
     document.body.appendChild(feedback);
-    setTimeout(() => document.body.removeChild(feedback), 1000);
+    setTimeout(() => {
+      if (document.body.contains(feedback)) {
+        document.body.removeChild(feedback);
+      }
+    }, 1000);
   };
 }
