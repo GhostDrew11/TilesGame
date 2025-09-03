@@ -5,6 +5,7 @@ const defaultTheme = {
   primaryColor: "#667eea",
   successColor: "#10b981",
   errorColor: "#ef4444",
+  warningColor: "#f59e0b",
   tileHidden: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
   tileRevealed: "linear-gradient(135deg, #667eea, #764ba2)",
   tileMatched: "linear-gradient(135deg, #10b981, #059669)",
