@@ -8,7 +8,7 @@ export default class SoundManager {
     ["mismatch", "❌"],
     ["win", "🎉"],
     ["lose", "😞"],
-    ["tick", "⏰"],
+    ["streak", "🔥"],
   ]);
 
   setEnabled(enabled: boolean) {
