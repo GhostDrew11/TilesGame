@@ -34,17 +34,6 @@ const ThemeSwitcher = ({
     }
   };
 
-  const getThemeLabel = () => {
-    switch (currentTheme) {
-      case "default":
-        return "Light Theme";
-      case "dark":
-        return "Dark Theme";
-      case "colorful":
-        return "Colorful Theme";
-    }
-  };
-
   const handleThemeSwitch = () => {
     const nextTheme: GameTheme = getNextTheme();
     onThemeChange(nextTheme);
@@ -60,7 +49,7 @@ const ThemeSwitcher = ({
         borderColor: theme.primaryColor,
       }}
       title={`Switch to ${getNextTheme()} theme`}
-      aria-label={`Current: ${getThemeLabel()}. Click to switch themes.`}
+      aria-label={`Current: ${currentTheme}. Click to switch themes.`}
     >
       {getThemeIcon()}
     </button>
