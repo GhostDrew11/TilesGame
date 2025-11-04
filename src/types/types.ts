@@ -9,6 +9,17 @@ export type SoundType =
   | "win"
   | "lose"
   | "streak";
+export type PlayerProfileProps = {
+  profile: PlayerProfile;
+  theme: ThemeConfig;
+  onUpdateProfile: (profile: Partial<PlayerProfile>) => void;
+};
+
+export type PlayerStatsProps = {
+  stats: PlayerStats;
+  totalGames: number;
+  theme: ThemeConfig;
+};
 
 export interface Tile {
   id: number;
@@ -28,6 +39,7 @@ export interface GameStats {
   accuracy: number;
   streak: number;
   maxStreak: number;
+  perfectMatches: number;
 }
 export interface GameConfig {
   studyTimeSeconds: number;
@@ -47,6 +59,7 @@ export interface HighScore {
   difficulty: GameDifficulty;
   maxStreak: number;
   date: string;
+  playerName: string;
 }
 
 export interface ScoreBreakdown {
@@ -56,6 +69,30 @@ export interface ScoreBreakdown {
   timeBonus: number;
   difficultyMultiplier: number;
   finalScore: number;
+}
+
+// New for Day 6a: Player Profile
+export interface PlayerProfile {
+  name: string;
+  avatar: string;
+  totalGamesPlayed: number;
+  totalWins: number;
+  highestScore: number;
+  highestStreak: number;
+  perfectGames: number;
+  stats: PlayerStats;
+  createdDate: string;
+}
+
+export interface PlayerStats {
+  totalMatches: number;
+  totalMismatches: number;
+  averageAccuracy: number;
+  averageScore: number;
+  fastestWin: number;
+  gamesPerDifficulty: Record<GameDifficulty, number>;
+  winStreak: number;
+  currentWinStreak: number;
 }
 
 export interface ThemeConfig {
