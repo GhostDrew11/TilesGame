@@ -5,6 +5,7 @@ import type {
   Tile,
   TileState,
   GameDifficulty,
+  ScoreBreakdown,
 } from "../types/types";
 import { shuffleArray } from "../utils/helpers";
 import { SoundManager } from "../types/SoundManager";
@@ -19,6 +20,8 @@ export const useMemoryGame = (config: GameConfig) => {
     phase: "setup",
     score: 0,
     accuracy: 0,
+    streak: 0,
+    maxStreak: 0,
   });
   const [selectedTiles, setSelectedTiles] = useState<number[]>([]);
   const [soundManager] = useState(() => new SoundManager());
@@ -74,16 +77,56 @@ export const useMemoryGame = (config: GameConfig) => {
     getTileSymbols,
   ]);
 
-  // Calculate score based on difficulty and performance
-  const calculateScore = useCallback(
-    (matches: number, clicks: number, difficulty: GameDifficulty): number => {
+  // Enhanced scoring calculations (Day 5 Hybrid System)
+  const calculateEstimatedScore = useCallback(
+    (
+      matches: number,
+      clicks: number,
+      streak: number,
+      difficulty: GameDifficulty
+    ): number => {
       const baseScore = matches * 100;
-      const efficiency = (matches * 2) / Math.max(clicks, 1);
+      const efficiency = clicks > 0 ? (matches * 2) / clicks : 0;
+      const streakBonus = streak > 1 ? (streak - 1) * 25 : 0;
       const difficultyMultiplier = { easy: 1, medium: 1.5, hard: 2 }[
         difficulty
       ];
 
-      return Math.round(baseScore * efficiency * difficultyMultiplier);
+      return Math.round(
+        (baseScore + streakBonus) * efficiency * difficultyMultiplier
+      );
+    },
+    []
+  );
+
+  const calculateFinalScore = useCallback(
+    (
+      matches: number,
+      clicks: number,
+      maxStreak: number,
+      timeRemaining: number,
+      difficulty: GameDifficulty
+    ): ScoreBreakdown => {
+      const baseScore = matches * 100;
+      const efficiency = clicks > 0 ? (matches * 2) / clicks : 0;
+      const efficiencyBonus = Math.round(baseScore * (efficiency - 1));
+      const streakBonus = maxStreak > 1 ? (maxStreak - 1) * 50 : 0;
+      const timeBonus = Math.max(0, timeRemaining * 5);
+      const difficultyMultiplier = { easy: 1, medium: 1.5, hard: 2 }[
+        difficulty
+      ];
+
+      const subtotal = baseScore + efficiencyBonus + streakBonus + timeBonus;
+      const finalScore = Math.round(subtotal * difficultyMultiplier);
+
+      return {
+        baseScore,
+        efficiencyBonus,
+        streakBonus,
+        timeBonus,
+        difficultyMultiplier,
+        finalScore,
+      };
     },
     []
   );
@@ -119,46 +162,54 @@ export const useMemoryGame = (config: GameConfig) => {
     setGameStats((prev) => ({ ...prev, phase: "play" }));
   }, []);
 
-  const endGame = useCallback(() => {
-    const finalScore = calculateScore(
+  const endGame = useCallback(
+    (timeRemaining: number = 0) => {
+      const scoreBreakdown = calculateFinalScore(
+        gameStats.matches,
+        gameStats.tilesClicked,
+        gameStats.maxStreak,
+        timeRemaining,
+        config.difficulty
+      );
+      const accuracy = calculateAccuracy(
+        gameStats.matches,
+        gameStats.tilesClicked
+      );
+
+      setGameStats((prev) => ({
+        ...prev,
+        phase: "results",
+        score: scoreBreakdown.finalScore,
+        accuracy,
+      }));
+
+      // Play win/lose sound
+      const totalPairs = config.gridSize / 2;
+      soundManager.play(gameStats.matches >= totalPairs ? "win" : "lose");
+
+      // Return high score object for parent component to handle
+      return {
+        score: scoreBreakdown.finalScore,
+        matches: gameStats.matches,
+        accuracy,
+        timeElapsed: gameStats.tilesClicked,
+        difficulty: config.difficulty,
+        maxStreak: gameStats.maxStreak,
+        date: new Date().toLocaleDateString(),
+        breakdown: scoreBreakdown,
+      };
+    },
+    [
+      calculateFinalScore,
       gameStats.matches,
       gameStats.tilesClicked,
-      config.difficulty
-    );
-    const accuracy = calculateAccuracy(
-      gameStats.matches,
-      gameStats.tilesClicked
-    );
-
-    setGameStats((prev) => ({
-      ...prev,
-      phase: "results",
-      score: finalScore,
-      accuracy,
-    }));
-
-    // Play win/lose sound
-    const totalPairs = config.gridSize / 2;
-    soundManager.play(gameStats.matches >= totalPairs ? "win" : "lose");
-
-    // Return high score object for parent component to handle
-    return {
-      score: finalScore,
-      matches: gameStats.matches,
-      accuracy,
-      timeElapsed: gameStats.tilesClicked,
-      difficulty: config.difficulty,
-      date: new Date().toLocaleDateString(),
-    };
-  }, [
-    gameStats.matches,
-    gameStats.tilesClicked,
-    config.difficulty,
-    config.gridSize,
-    calculateScore,
-    calculateAccuracy,
-    soundManager,
-  ]);
+      gameStats.maxStreak,
+      config.difficulty,
+      config.gridSize,
+      calculateAccuracy,
+      soundManager,
+    ]
+  );
 
   // Handle tile clicks with enhanced feedback
   const handleTileClick = useCallback(
@@ -206,12 +257,35 @@ export const useMemoryGame = (config: GameConfig) => {
                   : t
               )
             );
-            setGameStats((prev) => ({
-              ...prev,
-              matches: prev.matches + 1,
-              accuracy: calculateAccuracy(prev.matches + 1, prev.tilesClicked),
-            }));
-            soundManager.play("match");
+
+            setGameStats((prev) => {
+              const newMatches = prev.matches + 1;
+              const newStreak = prev.streak + 1;
+              const newMaxStreak = Math.max(prev.maxStreak, newStreak);
+              const estimatedScore = calculateEstimatedScore(
+                newMatches,
+                prev.tilesClicked,
+                newStreak,
+                config.difficulty
+              );
+              const accuracy = calculateAccuracy(newMatches, prev.tilesClicked);
+
+              // Play streak sound for streaks > 2
+              if (newStreak > 2) {
+                soundManager.play("streak");
+              } else {
+                soundManager.play("match");
+              }
+
+              return {
+                ...prev,
+                matches: newMatches,
+                streak: newStreak,
+                maxStreak: newMaxStreak,
+                score: estimatedScore,
+                accuracy,
+              };
+            });
           } else {
             //No match - show mismatch state temporarily
             setTiles((prev) =>
@@ -221,11 +295,20 @@ export const useMemoryGame = (config: GameConfig) => {
                   : t
               )
             );
-            setGameStats((prev) => ({
-              ...prev,
-              mismatches: prev.mismatches + 1,
-              accuracy: calculateAccuracy(prev.matches, prev.tilesClicked),
-            }));
+
+            setGameStats((prev) => {
+              const accuracy = calculateAccuracy(
+                prev.matches,
+                prev.tilesClicked
+              );
+              return {
+                ...prev,
+                mismatches: prev.mismatches + 1,
+                streak: 0, // Reset streak on mismatch
+                accuracy,
+              };
+            });
+
             soundManager.play("mismatch");
 
             // Hide tiles after showing mismatch
@@ -244,7 +327,15 @@ export const useMemoryGame = (config: GameConfig) => {
         }, 1000);
       }
     },
-    [tiles, selectedTiles, gameStats.phase, soundManager, calculateAccuracy]
+    [
+      tiles,
+      selectedTiles,
+      gameStats.phase,
+      soundManager,
+      calculateAccuracy,
+      calculateEstimatedScore,
+      config.difficulty,
+    ]
   );
 
   // Reset Game
