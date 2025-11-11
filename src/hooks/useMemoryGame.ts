@@ -22,6 +22,7 @@ export const useMemoryGame = (config: GameConfig) => {
     accuracy: 0,
     streak: 0,
     maxStreak: 0,
+    perfectMatches: 0,
   });
   const [selectedTiles, setSelectedTiles] = useState<number[]>([]);
   const [soundManager] = useState(() => new SoundManager());
@@ -195,6 +196,7 @@ export const useMemoryGame = (config: GameConfig) => {
         timeElapsed: gameStats.tilesClicked,
         difficulty: config.difficulty,
         maxStreak: gameStats.maxStreak,
+        perfectMatches: gameStats.perfectMatches,
         date: new Date().toLocaleDateString(),
         breakdown: scoreBreakdown,
       };
@@ -204,6 +206,7 @@ export const useMemoryGame = (config: GameConfig) => {
       gameStats.matches,
       gameStats.tilesClicked,
       gameStats.maxStreak,
+      gameStats.perfectMatches,
       config.difficulty,
       config.gridSize,
       calculateAccuracy,
@@ -262,6 +265,11 @@ export const useMemoryGame = (config: GameConfig) => {
               const newMatches = prev.matches + 1;
               const newStreak = prev.streak + 1;
               const newMaxStreak = Math.max(prev.maxStreak, newStreak);
+              const isPerfectMatch =
+                prev.tilesClicked === (prev.matches + 1) * 2 - 1;
+              const newPerfectMatches = isPerfectMatch
+                ? prev.perfectMatches + 1
+                : prev.perfectMatches;
               const estimatedScore = calculateEstimatedScore(
                 newMatches,
                 prev.tilesClicked,
@@ -282,6 +290,7 @@ export const useMemoryGame = (config: GameConfig) => {
                 matches: newMatches,
                 streak: newStreak,
                 maxStreak: newMaxStreak,
+                perfectMatches: newPerfectMatches,
                 score: estimatedScore,
                 accuracy,
               };
@@ -348,6 +357,9 @@ export const useMemoryGame = (config: GameConfig) => {
       phase: "setup",
       score: 0,
       accuracy: 0,
+      streak: 0,
+      maxStreak: 0,
+      perfectMatches: 0,
     });
     setSelectedTiles([]);
     setTiles([]);

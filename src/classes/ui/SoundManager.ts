@@ -27,7 +27,7 @@ export default class SoundManager {
     feedback.textContent = emoji;
     feedback.style.cssText = `
         position: fixed;
-        top: 20px;
+        top: 60px;
         right: 20px;
         font-size: 24px;
         z-index: 1000;
