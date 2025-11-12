@@ -9,11 +9,6 @@ export type SoundType =
   | "win"
   | "lose"
   | "streak";
-export type PlayerProfileProps = {
-  profile: PlayerProfile;
-  theme: ThemeConfig;
-  onUpdateProfile: (profile: Partial<PlayerProfile>) => void;
-};
 
 export type PlayerStatsProps = {
   stats: PlayerStats;
@@ -102,6 +97,7 @@ export interface ThemeConfig {
   primaryColor: string;
   successColor: string;
   errorColor: string;
+  warningColor: string;
   tileHidden: string;
   tileRevealed: string;
   tileMatched: string;
