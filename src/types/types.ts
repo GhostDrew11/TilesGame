@@ -54,7 +54,7 @@ export interface HighScore {
   difficulty: GameDifficulty;
   maxStreak: number;
   date: string;
-  playerName: string;
+  playerName?: string;
 }
 
 export interface ScoreBreakdown {
